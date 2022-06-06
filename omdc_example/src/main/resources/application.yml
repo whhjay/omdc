@@ -1,0 +1,7 @@
+omdc:
+  host: "47.112.126.155"
+  ports: [ 6301, 6302, 6303, 6305, 6306, 6307, 6308 ]
+
+logging:
+  file:
+    path: /home/admin/logs/omdc_sdk/example.log
