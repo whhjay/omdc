@@ -17,7 +17,7 @@ public class OmdMessageFusion implements InitializingBean {
     private final int QUEUE_SIZE = 200000; // 设置队列大小，防止内存耗尽
     private BlockingQueue<OmdMessage> messageQueue = new LinkedBlockingQueue<>(QUEUE_SIZE);
     private Thread messageConsumerThread;
-    private boolean running = false;
+    private volatile boolean running = false;
     private int consumerCounts = 0; //消费消息统计
     private int lostCounts = 0;     //丢弃的消息统计
     private long lastTimer = System.currentTimeMillis();
@@ -58,8 +58,13 @@ public class OmdMessageFusion implements InitializingBean {
                         log.error("message consumer exception", ex);
                     }
                 }
+                log.info("end message consumer thread...");
             }
         };
         messageConsumerThread.start();
+    }
+
+    public void stop() {
+        this.running = false;
     }
 }

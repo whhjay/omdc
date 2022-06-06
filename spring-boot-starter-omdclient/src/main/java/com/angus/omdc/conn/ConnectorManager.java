@@ -2,13 +2,16 @@ package com.angus.omdc.conn;
 
 import com.angus.omdc.config.ConnProperties;
 import com.angus.omdc.handler.OmdMessageFusion;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@Slf4j
 public class ConnectorManager {
 
     private static Map connectorCache = new ConcurrentHashMap<Long, NettyOmdcConnector>();
@@ -20,28 +23,27 @@ public class ConnectorManager {
 
     public ConnectorManager(ConnProperties connProperties) {
         this.connProperties = connProperties;
-        for (int i = 0; i < connProperties.getPorts().size(); i++) {
-            int port = connProperties.getPorts().get(i);
-            NettyOmdcConnector nettyOmdcConnector = new NettyOmdcConnector(omdMessageFusion, connProperties.getHost(), port);
-            connectorCache.put(port, nettyOmdcConnector);
-        }
     }
 
     public void start() {
-        for (int i = 0; i < connProperties.getPorts().size(); i++) {
-            int port = connProperties.getPorts().get(i);
-            NettyOmdcConnector nettyOmdcConnector = (NettyOmdcConnector) connectorCache.get(port);
-            if (nettyOmdcConnector != null)
-                nettyOmdcConnector.start(omdMessageFusion);
+        for (int i = 0; i < this.connProperties.getPorts().size(); i++) {
+            int port = this.connProperties.getPorts().get(i);
+            NettyOmdcConnector nettyOmdcConnector = new NettyOmdcConnector(omdMessageFusion, this.connProperties.getHost(), port);
+            this.connectorCache.put(port, nettyOmdcConnector);
+            nettyOmdcConnector.start();
         }
     }
 
-    public void stop() {
+    @PreDestroy
+    private void shutdown() {
+        omdMessageFusion.stop();
         for (int i = 0; i < connProperties.getPorts().size(); i++) {
             int port = connProperties.getPorts().get(i);
             NettyOmdcConnector nettyOmdcConnector = (NettyOmdcConnector) connectorCache.get(port);
-            if (nettyOmdcConnector != null)
+            if (nettyOmdcConnector != null) {
                 nettyOmdcConnector.stop();
+            }
         }
+        log.info("shutdown all connector");
     }
 }

@@ -1,3 +1,10 @@
+server:
+  shutdown: graceful  #优雅关闭
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: "10s"
+
 omdc:
   host: "47.112.126.155"
   ports: [ 6301, 6302, 6303, 6305, 6306, 6307, 6308 ]

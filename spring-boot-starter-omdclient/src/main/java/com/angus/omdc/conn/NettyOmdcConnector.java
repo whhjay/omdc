@@ -36,7 +36,7 @@ public class NettyOmdcConnector {
     private volatile boolean running = false;
     private volatile int delaySecondsIndex = 0;
 
-    private OmdMessageFusion fusion;
+    private final OmdMessageFusion fusion;
 
     private String host;
     private int port;
@@ -47,12 +47,11 @@ public class NettyOmdcConnector {
         this.port = port;
     }
 
-    public synchronized void start(OmdMessageFusion fusion) {
+    public synchronized void start() {
         if (running) {
             log.info("SKIP start " + host + ":" + port + ", it is running.");
             return;
         }
-        this.fusion = fusion;
         running = true;
         eventGroup = new NioEventLoopGroup();
         createBootstrapAndConnect();
@@ -61,8 +60,9 @@ public class NettyOmdcConnector {
     public synchronized void stop() {
         running = false;
         try {
-            if (eventGroup != null)
+            if (eventGroup != null) {
                 eventGroup.shutdownGracefully();
+            }
             eventGroup = null;
         } catch (Exception ex) {
             log.error("", ex);
@@ -154,6 +154,9 @@ public class NettyOmdcConnector {
         return DELAY_SECONDS[index];
     }
 
+    /**
+     * 连接断开监听处理
+     */
     private class DisconnectionHandler extends ChannelInboundHandlerAdapter {
         @Override
         public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
@@ -170,7 +173,10 @@ public class NettyOmdcConnector {
         }
     }
 
-    public class PacketMessageHandler extends AbstractOmdMessageHandler {
+    /**
+     * 解包后的消息处理
+     */
+    private class PacketMessageHandler extends AbstractOmdMessageHandler {
         @Override
         protected void messageReceived(ChannelHandlerContext ctx, OmdMessage msg) {
             fusion.messageOffer(msg);
