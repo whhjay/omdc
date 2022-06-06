@@ -1,7 +1,6 @@
 package com.angus.omdc.handler;
 
 import com.angus.omdc.message.OmdMessage;
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 

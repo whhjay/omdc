@@ -31,6 +31,7 @@
         <dependency>
             <groupId>con.angus.omdc</groupId>
             <artifactId>spring-boot-starter-omdclient</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
