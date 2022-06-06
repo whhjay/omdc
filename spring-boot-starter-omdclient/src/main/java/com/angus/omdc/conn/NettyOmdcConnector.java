@@ -7,7 +7,6 @@ import com.angus.omdc.message.PacketDecoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -19,7 +18,7 @@ import java.nio.ByteOrder;
 import java.util.concurrent.TimeUnit;
 
 /**
- * omdc通道连接
+ * netty实现omdc通道连接
  *
  * @author wangjia
  */
@@ -73,7 +72,6 @@ public class NettyOmdcConnector {
         return running;
     }
 
-    @SuppressWarnings("unchecked")
     private void createBootstrapAndConnect() {
         if (!isRunning()) {
             log.info("SKIP createBootstrapAndConnect " + host + ":" + port + ", it is shutdown.");
@@ -81,22 +79,10 @@ public class NettyOmdcConnector {
         }
         bootstrap = new Bootstrap();
 
-        Integer connectTimeoutMillis = CONNECT_TIMEOUT_MILLIS;
         bootstrap.group(eventGroup)
                 .channel(NioSocketChannel.class)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeoutMillis)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) {
-                        ChannelPipeline p = ch.pipeline();
-                        p.addLast("readTimeoutHandler", new ReadTimeoutHandler(READ_TIMEOUT_SEC));
-                        p.addLast("reconnect", new DisconnectionHandler());
-                        p.addLast("frameDecoder",
-                                new LengthFieldBasedFrameDecoder(ByteOrder.LITTLE_ENDIAN, MAX_PACKET_SIZE, 0, 2, -2, 0, true));
-                        p.addLast("packetDecoder", new PacketDecoder());
-                        p.addLast("packetMessageHandler", new PacketMessageHandler());
-                    }
-                });
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, CONNECT_TIMEOUT_MILLIS)
+                .handler(new ChannelInitializerHandler());
         log.info("start connecting to... {} : {}", host, port);
         try {
             ChannelFuture connect = bootstrap.connect(host, port);
@@ -108,11 +94,29 @@ public class NettyOmdcConnector {
     }
 
     /**
+     * initChannel
+     *
+     * @author wangjia
+     */
+    private class ChannelInitializerHandler extends ChannelInitializer {
+        @Override
+        protected void initChannel(Channel channel) throws Exception {
+            ChannelPipeline p = channel.pipeline();
+            p.addLast("readTimeoutHandler", new ReadTimeoutHandler(READ_TIMEOUT_SEC));
+            p.addLast("reconnect", new DisconnectionHandler());
+            p.addLast("frameDecoder",
+                    new LengthFieldBasedFrameDecoder(ByteOrder.LITTLE_ENDIAN, MAX_PACKET_SIZE, 0, 2, -2, 0, true));
+            p.addLast("packetDecoder", new PacketDecoder());
+            p.addLast("packetMessageHandler", new PacketMessageHandler());
+        }
+    }
+
+
+    /**
      * reconnect
      *
      * @author wangjia
      */
-    @SuppressWarnings("rawtypes")
     private class ReconnectListener implements GenericFutureListener {
         private EventLoop eventLoop;
 
@@ -130,9 +134,7 @@ public class NettyOmdcConnector {
                 long nextRetryDelaySeconds = nextRetryDelaySeconds();
                 log.info("failed to connect " + host + ":" + port + ", retry in " + nextRetryDelaySeconds
                         + " seconds ...");
-                eventLoop.schedule(() -> {
-                    createBootstrapAndConnect();
-                }, nextRetryDelaySeconds, TimeUnit.SECONDS);
+                eventLoop.schedule(() -> createBootstrapAndConnect(), nextRetryDelaySeconds, TimeUnit.SECONDS);
             } else {
                 // reset delaySecondsIndex
                 delaySecondsIndex = 0;
@@ -148,9 +150,12 @@ public class NettyOmdcConnector {
             // 如果一直不成功，使用最后一个超时时间
             delaySecondsIndex = DELAY_SECONDS.length - 1;
         }
-        //
-        if (index < 0) index = 0;
-        if (index >= DELAY_SECONDS.length) index = DELAY_SECONDS.length - 1;
+        if (index < 0) {
+            index = 0;
+        }
+        if (index >= DELAY_SECONDS.length) {
+            index = DELAY_SECONDS.length - 1;
+        }
         return DELAY_SECONDS[index];
     }
 
