@@ -1,10 +1,13 @@
 package com.angus.omdc.example;
 
 import com.angus.omdc.common.OmdConstants;
+import com.angus.omdc.handler.QouteMsgTypeHandler;
 import com.angus.omdc.handler.QuoteHandler;
 import com.angus.omdc.message.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 @Component
 @Slf4j
@@ -12,6 +15,9 @@ public class QuoteHandlerImpl implements QuoteHandler {
 
     private long lastTime = System.currentTimeMillis();
     private long counts = 0;
+
+    @Resource
+    QouteMsgTypeHandler qouteMsgTypeHandler;
 
     @Override
     public void processOmdMessage(OmdMessage message) {
@@ -22,6 +28,7 @@ public class QuoteHandlerImpl implements QuoteHandler {
                 if (System.currentTimeMillis() - securityDefinitionMessage.getSendTime().getTime() > 20) {
                     log.info("SECURITY_DEFINITION time out " + (System.currentTimeMillis() - securityDefinitionMessage.getSendTime().getTime()));
                 }
+                qouteMsgTypeHandler.processSecurityDefinition(securityDefinitionMessage);
                 break;
             case OmdConstants.MSG_TYPE.NOMINAL_PRICE:
                 NominalPriceMessage nominalPriceMessage = (NominalPriceMessage) message;
