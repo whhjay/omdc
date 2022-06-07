@@ -17,7 +17,7 @@ public class SecurityStatusMessageParser extends OmdMessageParser<SecurityStatus
 
 	@Override
 	protected SecurityStatusMessage doParseMessageBody(ByteBuf msgBodyBuf, SecurityStatusMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
 		msg.suspensionIndicator = msgBodyBuf.readUnsignedByte(); // uint8
 		msgBodyBuf.readBytes(msg.filler3);
 		//

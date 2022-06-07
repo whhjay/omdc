@@ -14,13 +14,13 @@ public class OmdMessage {
     //
     long seqNum; // 消息序列号
     // 自定义属性
-    private Date sendTime; // 消息封包的sentTime属性
+    private long sendTime; // 消息封包的sentTime属性
 
-    public Date getSendTime() {
+    public long getSendTime() {
         return sendTime;
     }
 
-    public void setSendTime(Date sendTime) {
+    public void setSendTime(long sendTime) {
         this.sendTime = sendTime;
     }
 
@@ -47,4 +47,5 @@ public class OmdMessage {
     public void setMsgType(int msgType) {
         this.msgType = msgType;
     }
+
 }

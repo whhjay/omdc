@@ -20,7 +20,7 @@ public class AggregateOrderBookUpdateMessageParser extends OmdMessageParser<Aggr
 	@Override
 	protected AggregateOrderBookUpdateMessage doParseMessageBody(ByteBuf msgBodyBuf,
 			AggregateOrderBookUpdateMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt();
+		msg.securityCode = msgBodyBuf.readIntLE();
 		msgBodyBuf.readBytes(msg.filler3);
 		msg.noEntries 	= msgBodyBuf.readUnsignedByte();
 		if (msg.noEntries <= 0) {
@@ -29,10 +29,10 @@ public class AggregateOrderBookUpdateMessageParser extends OmdMessageParser<Aggr
 		msg.entries = new ArrayList<AggregateOrderBookUpdateMessage.Entry>(msg.noEntries);
 		for (int i = 0; i < msg.noEntries; i++) {
 			AggregateOrderBookUpdateMessage.Entry entry = new AggregateOrderBookUpdateMessage.Entry();
-			entry.aggregateQuantity = msgBodyBuf.readLong(); // uint64
-			entry.price = msgBodyBuf.readInt();
-			entry.numberOfOrders = msgBodyBuf.readUnsignedInt();
-			entry.side = msgBodyBuf.readUnsignedShort();
+			entry.aggregateQuantity = msgBodyBuf.readLongLE(); // uint64
+			entry.price = msgBodyBuf.readIntLE();
+			entry.numberOfOrders = msgBodyBuf.readUnsignedIntLE();
+			entry.side = msgBodyBuf.readUnsignedShortLE();
 			entry.priceLevel = msgBodyBuf.readUnsignedByte();
 			entry.updateAction = msgBodyBuf.readUnsignedByte();
 			msgBodyBuf.readBytes(entry.filler4);

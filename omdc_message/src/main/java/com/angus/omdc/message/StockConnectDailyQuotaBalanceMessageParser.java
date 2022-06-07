@@ -20,8 +20,8 @@ public class StockConnectDailyQuotaBalanceMessageParser extends OmdMessageParser
 			StockConnectDailyQuotaBalanceMessage msg) throws Exception {
 		msg.stockConnectMarket = readAsciiString(msgBodyBuf, 2); // string2
 		msg.tradingDirection = readAsciiString(msgBodyBuf, 2); // string2
-		msg.dailyQuotaBalance = msgBodyBuf.readLong(); // int64
-		msg.dailyQuotaBalanceTime = msgBodyBuf.readLong(); // uint64
+		msg.dailyQuotaBalance = msgBodyBuf.readLongLE(); // int64
+		msg.dailyQuotaBalanceTime = msgBodyBuf.readLongLE(); // uint64
 		
 //		Date dailyQuotaBalanceTime = new Date(msg.dailyQuotaBalanceTime / (1000*1000));
 		return msg;

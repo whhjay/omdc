@@ -29,10 +29,10 @@ public class NewsMessageParser extends OmdMessageParser<NewsMessage> {
 		msg.cancelFlag = readAsciiString(msgBodyBuf, 1); // sting1
 		msg.lastFragment = readAsciiString(msgBodyBuf, 1); // string1
 		msgBodyBuf.readBytes(msg.filler4); // byte4
-		msg.releaseTime = msgBodyBuf.readLong(); // uint64
+		msg.releaseTime = msgBodyBuf.readLongLE(); // uint64
 		msgBodyBuf.readBytes(msg.filler2); // byte2
 		
-		msg.noMarketCodes = msgBodyBuf.readUnsignedShort(); // uint16
+		msg.noMarketCodes = msgBodyBuf.readUnsignedShortLE(); // uint16
 		if (msg.noMarketCodes > 0) {
 			msg.marketCode = new ArrayList<>(msg.noMarketCodes);
 			for (int i = 0; i < msg.noMarketCodes; i++) {
@@ -42,17 +42,17 @@ public class NewsMessageParser extends OmdMessageParser<NewsMessage> {
 		}
 		//
 		msgBodyBuf.readBytes(msg.filler2b); // byte2
-		msg.noSecurityCodes = msgBodyBuf.readUnsignedShort(); // uint16
+		msg.noSecurityCodes = msgBodyBuf.readUnsignedShortLE(); // uint16
 		if (msg.noSecurityCodes > 0) {
 			msg.securityCode = new ArrayList<>(msg.noSecurityCodes);
 			for (int i = 0; i < msg.noSecurityCodes; i++) {
-				int securityCode = msgBodyBuf.readInt(); // uint32
+				int securityCode = msgBodyBuf.readIntLE(); // uint32
 				msg.securityCode.add(securityCode);
 			}
 		}
 		//
 		msgBodyBuf.readBytes(msg.filler2c); // byte2
-		msg.noNewsLines = msgBodyBuf.readUnsignedShort(); // uint16
+		msg.noNewsLines = msgBodyBuf.readUnsignedShortLE(); // uint16
 		if (msg.noNewsLines > 0) {
 			msg.newsLine = new ArrayList<>(msg.noNewsLines);
 			for (int i = 0; i < msg.noNewsLines; i++) {

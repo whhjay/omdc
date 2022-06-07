@@ -17,8 +17,8 @@ public class NominalPriceMessageParser extends OmdMessageParser<NominalPriceMess
 
 	@Override
 	protected NominalPriceMessage doParseMessageBody(ByteBuf msgBodyBuf, NominalPriceMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
-		msg.nominalPrice = msgBodyBuf.readInt(); // int32
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
+		msg.nominalPrice = msgBodyBuf.readIntLE(); // int32
 		//
 		return msg;
 	}

@@ -17,11 +17,11 @@ public class TradeTickerMessageParser extends OmdMessageParser<TradeTickerMessag
 
 	@Override
 	protected TradeTickerMessage doParseMessageBody(ByteBuf msgBodyBuf, TradeTickerMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
-		msg.tickerId = msgBodyBuf.readUnsignedInt(); // uint32
-		msg.price = msgBodyBuf.readInt(); // int32
-		msg.aggregateQuantity = msgBodyBuf.readLong(); // uint64
-		msg.tradeTime = msgBodyBuf.readLong(); // uint64
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
+		msg.tickerId = msgBodyBuf.readUnsignedIntLE(); // uint32
+		msg.price = msgBodyBuf.readIntLE(); // int32
+		msg.aggregateQuantity = msgBodyBuf.readLongLE(); // uint64
+		msg.tradeTime = msgBodyBuf.readLongLE(); // uint64
 		msg.trdType = msgBodyBuf.readShort(); // int16
 		msg.trdCancelFlag = readAsciiString(msgBodyBuf, 1); // string1
 		msg.filler = msgBodyBuf.readByte(); // byte1

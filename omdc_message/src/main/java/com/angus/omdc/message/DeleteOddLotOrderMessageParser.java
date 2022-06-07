@@ -18,10 +18,10 @@ public class DeleteOddLotOrderMessageParser extends OmdMessageParser<DeleteOddLo
 	@Override
 	protected DeleteOddLotOrderMessage doParseMessageBody(ByteBuf msgBodyBuf, DeleteOddLotOrderMessage msg)
 			throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
-		msg.orderId = msgBodyBuf.readLong(); // uint64
-		msg.brokerId = msgBodyBuf.readUnsignedShort(); // uint16
-		msg.side = msgBodyBuf.readUnsignedShort(); // uint16
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
+		msg.orderId = msgBodyBuf.readLongLE(); // uint64
+		msg.brokerId = msgBodyBuf.readUnsignedShortLE(); // uint16
+		msg.side = msgBodyBuf.readUnsignedShortLE(); // uint16
 		//
 		return msg;
 	}

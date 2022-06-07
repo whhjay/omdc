@@ -20,7 +20,7 @@ public class MarketTurnoverMessageParser extends OmdMessageParser<MarketTurnover
 		msg.marketCode = readAsciiString(msgBodyBuf, 4); // string4
 		msg.currencyCode = readAsciiString(msgBodyBuf, 3); // string3
 		msg.filler = msgBodyBuf.readByte();
-		msg.turnover = msgBodyBuf.readLong();
+		msg.turnover = msgBodyBuf.readLongLE();
 		//
 		return msg;
 	}

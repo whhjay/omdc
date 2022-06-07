@@ -17,10 +17,10 @@ public class ReferencePriceMessageParser extends OmdMessageParser<ReferencePrice
 
 	@Override
 	protected ReferencePriceMessage doParseMessageBody(ByteBuf msgBodyBuf, ReferencePriceMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
-		msg.referencePrice = msgBodyBuf.readInt();
-		msg.lowerPrice = msgBodyBuf.readInt();
-		msg.upperPrice = msgBodyBuf.readInt();
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
+		msg.referencePrice = msgBodyBuf.readIntLE();
+		msg.lowerPrice = msgBodyBuf.readIntLE();
+		msg.upperPrice = msgBodyBuf.readIntLE();
 		//
 		return msg;
 	}

@@ -17,12 +17,12 @@ public class VCMTriggerMessageParser extends OmdMessageParser<VCMTriggerMessage>
 
 	@Override
 	protected VCMTriggerMessage doParseMessageBody(ByteBuf msgBodyBuf, VCMTriggerMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
-		msg.collingOffStartTime = msgBodyBuf.readLong(); // uint64
-		msg.collingOffEndTime = msgBodyBuf.readLong(); // uint64
-		msg.vcmREferencePrice = msgBodyBuf.readInt(); // int32
-		msg.vcmLowerPrice = msgBodyBuf.readInt(); // int32
-		msg.vcmUpperPrice = msgBodyBuf.readInt(); // int32
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
+		msg.collingOffStartTime = msgBodyBuf.readLongLE(); // uint64
+		msg.collingOffEndTime = msgBodyBuf.readLongLE(); // uint64
+		msg.vcmREferencePrice = msgBodyBuf.readIntLE(); // int32
+		msg.vcmLowerPrice = msgBodyBuf.readIntLE(); // int32
+		msg.vcmUpperPrice = msgBodyBuf.readIntLE(); // int32
 		//
 		return msg;
 	}

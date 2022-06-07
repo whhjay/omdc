@@ -17,9 +17,9 @@ public class IndicativeEquilibriumPriceMessageParser extends OmdMessageParser<In
 
     @Override
     protected IndicativeEquilibriumPriceMessage doParseMessageBody(ByteBuf msgBodyBuf, IndicativeEquilibriumPriceMessage msg) throws Exception {
-        msg.securityCode = msgBodyBuf.readInt(); // uint32
-        msg.price = msgBodyBuf.readInt(); // int32
-        msg.aggregateQuantity = msgBodyBuf.readLong();
+        msg.securityCode = msgBodyBuf.readIntLE(); // uint32
+        msg.price = msgBodyBuf.readIntLE(); // int32
+        msg.aggregateQuantity = msgBodyBuf.readLongLE();
         //
         return msg;
     }

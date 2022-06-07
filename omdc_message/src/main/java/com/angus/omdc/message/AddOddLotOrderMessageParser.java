@@ -18,12 +18,12 @@ public class AddOddLotOrderMessageParser extends OmdMessageParser<AddOddLotOrder
 
     @Override
     protected AddOddLotOrderMessage doParseMessageBody(ByteBuf msgBodyBuf, AddOddLotOrderMessage msg) throws Exception {
-        msg.securityCode = msgBodyBuf.readInt();
-        msg.orderId = msgBodyBuf.readLong();
-        msg.price = msgBodyBuf.readInt();
-        msg.quantity = msgBodyBuf.readUnsignedInt();
-        msg.brokerId = msgBodyBuf.readUnsignedShort();
-        msg.side = msgBodyBuf.readUnsignedShort();
+        msg.securityCode = msgBodyBuf.readIntLE();
+        msg.orderId = msgBodyBuf.readLongLE();
+        msg.price = msgBodyBuf.readIntLE();
+        msg.quantity = msgBodyBuf.readUnsignedIntLE();
+        msg.brokerId = msgBodyBuf.readUnsignedShortLE();
+        msg.side = msgBodyBuf.readUnsignedShortLE();
         return msg;
     }
 

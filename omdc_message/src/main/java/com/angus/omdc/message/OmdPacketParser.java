@@ -3,93 +3,51 @@ package com.angus.omdc.message;
 import com.angus.omdc.common.OmdConstants;
 import io.netty.buffer.ByteBuf;
 
-import java.nio.ByteOrder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+
+/**
+ * OMDC following types  parser
+ * <p>String  ASCII characters which are left aligned and padded with spaces, unless otherwise specified</p>
+ * <p>Uint8   8 bit unsigned integer</p>
+ * <p>Uint16  Little-Endian encoded 16 bit unsigned integer</p>
+ * <p>Uint32  Little-Endian encoded 32 bit unsigned integer</p>
+ * <p>Uint64  Little-Endian encoded 64 bit unsigned integer</p>
+ * <p>Int16   Little-Endian encoded 16 bit signed integer</p>
+ * <p>Int32   Little-Endian encoded 32 bit signed integer</p>
+ * <p>Int64   Little-Endian encoded 64 bit signed integer</p>
+ * <p>Binary  Unicode encoding used for Chinese characters</p>
+ *
+ * @author wangjia
+ */
 public class OmdPacketParser {
 
-    private static final Map<Integer, OmdMessageParser<?>> MessageParserMapping = new HashMap<>();
+    private static final long unixNanoPower = 1000000;
 
-    static {
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.ADD_ODD_LOT_ORDER, new AddOddLotOrderMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.AGGREGATE_ORDER_BOOK_UPDATE, new AggregateOrderBookUpdateMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.BROKER_QUEUE, new BrokerQueueMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.CLOSING_PRICE, new ClosingPriceMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.CURRENCY_RATE, new CurrencyRateMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.DELETE_ODD_LOT_ORDER, new DeleteOddLotOrderMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.INDEX_DATA, new IndexDataMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.INDEX_DEFINITION, new IndexDefinitionMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.INDICATIVE_EQUILIBRIUM_PRICE, new IndicativeEquilibriumPriceMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.LIQUIDITY_PROVIDER, new LiquidityProviderMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.MARKET_DEFINITION, new MarketDefinitionMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.MARKET_TURNOVER, new MarketTurnoverMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.NEWS, new NewsMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.NOMINAL_PRICE, new NominalPriceMessageParser());
-        //
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.ORDER_IMBALANCE, new OrderImbalanceMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.REFERENCE_PRICE, new ReferencePriceMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.SECURITY_DEFINITION, new SecurityDefinitionMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.SECURITY_STATUS, new SecurityStatusMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.STATISTICS, new StatisticsMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.TRADE_TICKER, new TradeTickerMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.TRADING_SESSION_STATUS, new TradingSessionStatusMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.VCM_TRIGGER, new VCMTriggerMessageParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.YIELD, new YieldMessageParser());
-        //
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.STOCK_CONNECT_MARKET_TURNOVER, new StockConnectMarketTurnoverParser());
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.STOCK_CONNECT_DAILY_QUOTA_BALANCE, new StockConnectDailyQuotaBalanceMessageParser());
-        //
-        MessageParserMapping.put(OmdConstants.MSG_TYPE.SEQUENCE_RESET, new SequenceResetMessageParser());
-    }
-
-    private long unixNanoPower = 1000000;
-    private long startTimer = System.currentTimeMillis() * unixNanoPower;
-
-    public OmdPacket parse(ByteBuf buf) {
-        buf = buf.order(ByteOrder.LITTLE_ENDIAN);
+    public static OmdPacket parse(ByteBuf buf) {
         OmdPacket packet = new OmdPacket();
-        packet.pktSize = buf.readUnsignedShort();
+        packet.pktSize = buf.readUnsignedShortLE();
         packet.msgCount = buf.readUnsignedByte();
         packet.filler = buf.readByte();
-        packet.seqNum = buf.readUnsignedInt();
-        packet.sendTime = buf.readLong();
+        packet.seqNum = buf.readUnsignedIntLE();
+        packet.sendTime = buf.readLongLE();
         parseMessages(packet, buf);
         return packet;
     }
 
     public byte[] parseToBytes(ByteBuf buf) {
-        buf = buf.order(ByteOrder.LITTLE_ENDIAN);
         byte[] req = new byte[buf.readableBytes()];
         buf.readBytes(req);
         return req;
     }
 
-    private Date lastSendTime;
-
-    private void parseMessages(OmdPacket packet, ByteBuf buf) {
+    private static void parseMessages(OmdPacket packet, ByteBuf buf) {
         if (packet.getMsgCount() <= 0) {
             // 没有包含消息，可能是心跳包
             return;
         }
-        Date sendTime;
-        try {
-            if (packet.sendTime > startTimer) {//UTC纳秒
-                sendTime = new Date(packet.sendTime / unixNanoPower);
-            } else {
-                //由于过来的时间不是时间戳，而是一个时间字符串，所以将字符串转换成时间戳
-                sendTime = new SimpleDateFormat("yyyyMMddHHmmssSSS").parse(packet.sendTime + "");
-            }
-            lastSendTime = sendTime;
-        } catch (ParseException e) {
-            System.err.println("time parse err:" + packet.sendTime + "  " + e.getMessage());
-            if (lastSendTime == null) {
-                return;
-            }
-            sendTime = lastSendTime;
-        }
-
+        long sendTime = packet.sendTime / unixNanoPower;
         List<OmdMessage> messages = new ArrayList<>(packet.getMsgCount());
         long seqNum = packet.getSeqNum();
         OmdMessage msg;
@@ -97,8 +55,8 @@ public class OmdPacketParser {
         for (int i = 0; i < packet.getMsgCount(); i++) {
             msg = new OmdMessage();
             msg.setSendTime(sendTime);
-            msg.msgSize = buf.readUnsignedShort();
-            msg.msgType = buf.readUnsignedShort();
+            msg.msgSize = buf.readUnsignedShortLE();
+            msg.msgType = buf.readUnsignedShortLE();
             msg.setSeqNum(seqNum); // 第一个消息的序列号就是封包的序列号
             seqNum++;
             int msgBodySize = msg.msgSize - 4;
@@ -118,8 +76,8 @@ public class OmdPacketParser {
         packet.setMessages(messages);
     }
 
-    private OmdMessage parseMessageBody(OmdMessage msg, ByteBuf msgBodyBuf) throws Exception {
-        OmdMessageParser<?> parser = MessageParserMapping.get(msg.getMsgType());
+    private static OmdMessage parseMessageBody(OmdMessage msg, ByteBuf msgBodyBuf) throws Exception {
+        OmdMessageParser<?> parser = OmdConstants.getOmdMessageParser(msg.getMsgType());
         if (parser == null) {
             return msg;
         }

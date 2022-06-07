@@ -1,8 +1,8 @@
 package com.angus.omdc.conn;
 
-import com.angus.omdc.handler.AbstractOmdMessageHandler;
 import com.angus.omdc.handler.OmdMessageFusion;
 import com.angus.omdc.message.OmdMessage;
+import com.angus.omdc.message.OmdPacket;
 import com.angus.omdc.message.PacketDecoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -181,10 +181,14 @@ public class NettyOmdcConnector {
     /**
      * 解包后的消息处理
      */
-    private class PacketMessageHandler extends AbstractOmdMessageHandler {
+    private class PacketMessageHandler extends SimpleChannelInboundHandler<OmdPacket> {
         @Override
-        protected void messageReceived(ChannelHandlerContext ctx, OmdMessage msg) {
-            fusion.messageOffer(msg);
+        protected void channelRead0(ChannelHandlerContext channelHandlerContext, OmdPacket packet) throws Exception {
+            if (packet.getMessages() != null) {
+                for (OmdMessage msg : packet.getMessages()) {
+                    fusion.messageOffer(msg);
+                }
+            }
         }
     }
 

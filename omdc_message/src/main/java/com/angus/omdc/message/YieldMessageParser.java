@@ -17,8 +17,8 @@ public class YieldMessageParser extends OmdMessageParser<YieldMessage> {
 
 	@Override
 	protected YieldMessage doParseMessageBody(ByteBuf msgBodyBuf, YieldMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
-		msg.yield = msgBodyBuf.readInt(); // int32
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
+		msg.yield = msgBodyBuf.readIntLE(); // int32
 		//
 		return msg;
 	}

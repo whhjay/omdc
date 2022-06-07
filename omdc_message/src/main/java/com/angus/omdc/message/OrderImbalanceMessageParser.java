@@ -17,10 +17,10 @@ public class OrderImbalanceMessageParser extends OmdMessageParser<OrderImbalance
 
 	@Override
 	protected OrderImbalanceMessage doParseMessageBody(ByteBuf msgBodyBuf, OrderImbalanceMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
 		msg.orderImbalanceDirection = readAsciiString(msgBodyBuf, 1); // string1
 		msg.filler = msgBodyBuf.readByte(); // byte
-		msg.orderImbalanceQuantity = msgBodyBuf.readLong(); // uint64
+		msg.orderImbalanceQuantity = msgBodyBuf.readLongLE(); // uint64
 		msgBodyBuf.readBytes(msg.filler2); // byte2
 		//
 		return msg;

@@ -21,9 +21,9 @@ public class StockConnectMarketTurnoverParser extends OmdMessageParser<StockConn
 		// TODO Auto-generated method stub
 		msg.stockConnectMarket = readAsciiString(msgBodyBuf, 2); // string2
 		msg.tradingDirection = readAsciiString(msgBodyBuf, 2); // string2
-		msg.buyTurnover = msgBodyBuf.readLong(); // int64
-		msg.sellTurnover = msgBodyBuf.readLong(); // int64
-		msg.totalTurnover = msgBodyBuf.readLong(); // int64
+		msg.buyTurnover = msgBodyBuf.readLongLE(); // int64
+		msg.sellTurnover = msgBodyBuf.readLongLE(); // int64
+		msg.totalTurnover = msgBodyBuf.readLongLE(); // int64
 		return msg;
 	}
 

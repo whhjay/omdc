@@ -19,9 +19,9 @@ public class BrokerQueueMessageParser extends OmdMessageParser<BrokerQueueMessag
 
 	@Override
 	protected BrokerQueueMessage doParseMessageBody(ByteBuf msgBodyBuf, BrokerQueueMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
 		msg.itemCount = msgBodyBuf.readUnsignedByte(); // uint8
-		msg.side = msgBodyBuf.readUnsignedShort(); // uint16
+		msg.side = msgBodyBuf.readUnsignedShortLE(); // uint16
 		msg.bqMoreFlag = readAsciiString(msgBodyBuf, 1); // string1
 		//
 		if (msg.itemCount <= 0) {
@@ -30,7 +30,7 @@ public class BrokerQueueMessageParser extends OmdMessageParser<BrokerQueueMessag
 		msg.entries = new ArrayList<>(msg.itemCount);
 		for (int i = 0; i < msg.itemCount; i++) {
 			BrokerQueueMessage.Entry entry = new BrokerQueueMessage.Entry();
-			entry.item = msgBodyBuf.readUnsignedShort();
+			entry.item = msgBodyBuf.readUnsignedShortLE();
 			entry.type = readAsciiString(msgBodyBuf, 1);
 			entry.filler = msgBodyBuf.readByte();
 			//

@@ -17,9 +17,9 @@ public class ClosingPriceMessageParser extends OmdMessageParser<ClosingPriceMess
 
 	@Override
 	protected ClosingPriceMessage doParseMessageBody(ByteBuf msgBodyBuf, ClosingPriceMessage msg) throws Exception {
-		msg.securityCode = msgBodyBuf.readInt();
-		msg.closingPrice = msgBodyBuf.readInt(); // int32, 3 implied decimal places
-		msg.numberOfTrades = msgBodyBuf.readUnsignedInt();
+		msg.securityCode = msgBodyBuf.readIntLE();
+		msg.closingPrice = msgBodyBuf.readIntLE(); // int32, 3 implied decimal places
+		msg.numberOfTrades = msgBodyBuf.readUnsignedIntLE();
 		
 		return msg;
 	}

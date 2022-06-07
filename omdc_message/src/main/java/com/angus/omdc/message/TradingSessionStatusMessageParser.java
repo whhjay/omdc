@@ -24,8 +24,8 @@ public class TradingSessionStatusMessageParser extends OmdMessageParser<TradingS
 		msg.tradingSesStatus = msgBodyBuf.readUnsignedByte(); // uint8
 		msg.tradingSesControlFlag = readAsciiString(msgBodyBuf, 1); // string1
 		msgBodyBuf.readBytes(msg.filler4); // byte4
-		msg.startDateTime = msgBodyBuf.readLong(); // uint64
-		msg.endDateTime = msgBodyBuf.readLong(); // uint64
+		msg.startDateTime = msgBodyBuf.readLongLE(); // uint64
+		msg.endDateTime = msgBodyBuf.readLongLE(); // uint64
 		//
 		return msg;
 	}

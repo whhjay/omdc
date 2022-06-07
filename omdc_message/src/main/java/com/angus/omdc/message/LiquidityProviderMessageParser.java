@@ -20,14 +20,14 @@ public class LiquidityProviderMessageParser extends OmdMessageParser<LiquidityPr
 	@Override
 	protected LiquidityProviderMessage doParseMessageBody(ByteBuf msgBodyBuf, LiquidityProviderMessage msg)
 			throws Exception {
-		msg.securityCode = msgBodyBuf.readInt(); // uint32
-		msg.noLiquidityProviders = msgBodyBuf.readUnsignedShort(); // uint16
+		msg.securityCode = msgBodyBuf.readIntLE(); // uint32
+		msg.noLiquidityProviders = msgBodyBuf.readUnsignedShortLE(); // uint16
 		if (msg.noLiquidityProviders <= 0) {
 			return msg;
 		}
 		msg.lpBrokerNumber = new ArrayList<Integer>(msg.noLiquidityProviders);
 		for (int i = 0; i < msg.noLiquidityProviders; i++) {
-			int brokerNumber = msgBodyBuf.readUnsignedShort();
+			int brokerNumber = msgBodyBuf.readUnsignedShortLE();
 			//
 			msg.lpBrokerNumber.add(brokerNumber);
 		}

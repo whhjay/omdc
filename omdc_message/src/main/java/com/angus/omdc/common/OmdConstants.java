@@ -1,5 +1,7 @@
 package com.angus.omdc.common;
 
+import com.angus.omdc.message.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -127,5 +129,41 @@ public class OmdConstants {
         int STATUS_DAY_CLOSED = 100;
         //
         int SUBID_DAY_CLOSE = 0;
+    }
+
+
+    private static final Map<Integer, OmdMessageParser<?>> MessageParserMapping = new HashMap<>();
+
+    public static OmdMessageParser<?> getOmdMessageParser(int msgType) {
+        return MessageParserMapping.get(msgType);
+    }
+
+    static {
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.ADD_ODD_LOT_ORDER, new AddOddLotOrderMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.AGGREGATE_ORDER_BOOK_UPDATE, new AggregateOrderBookUpdateMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.BROKER_QUEUE, new BrokerQueueMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.CLOSING_PRICE, new ClosingPriceMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.CURRENCY_RATE, new CurrencyRateMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.DELETE_ODD_LOT_ORDER, new DeleteOddLotOrderMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.INDEX_DATA, new IndexDataMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.INDEX_DEFINITION, new IndexDefinitionMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.INDICATIVE_EQUILIBRIUM_PRICE, new IndicativeEquilibriumPriceMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.LIQUIDITY_PROVIDER, new LiquidityProviderMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.MARKET_DEFINITION, new MarketDefinitionMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.MARKET_TURNOVER, new MarketTurnoverMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.NEWS, new NewsMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.NOMINAL_PRICE, new NominalPriceMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.ORDER_IMBALANCE, new OrderImbalanceMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.REFERENCE_PRICE, new ReferencePriceMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.SECURITY_DEFINITION, new SecurityDefinitionMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.SECURITY_STATUS, new SecurityStatusMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.STATISTICS, new StatisticsMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.TRADE_TICKER, new TradeTickerMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.TRADING_SESSION_STATUS, new TradingSessionStatusMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.VCM_TRIGGER, new VCMTriggerMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.YIELD, new YieldMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.STOCK_CONNECT_MARKET_TURNOVER, new StockConnectMarketTurnoverParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.STOCK_CONNECT_DAILY_QUOTA_BALANCE, new StockConnectDailyQuotaBalanceMessageParser());
+        MessageParserMapping.put(OmdConstants.MSG_TYPE.SEQUENCE_RESET, new SequenceResetMessageParser());
     }
 }

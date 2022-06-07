@@ -19,9 +19,9 @@ public class CurrencyRateMessageParser extends OmdMessageParser<CurrencyRateMess
 	protected CurrencyRateMessage doParseMessageBody(ByteBuf msgBodyBuf, CurrencyRateMessage msg) throws Exception {
 		msg.currencyCode = readAsciiString(msgBodyBuf, 3); // 3
 		msg.filler1 = msgBodyBuf.readByte(); // 1
-		msg.currencyFactor = msgBodyBuf.readUnsignedShort(); // 2
+		msg.currencyFactor = msgBodyBuf.readUnsignedShortLE(); // 2
 		msgBodyBuf.readBytes(msg.filler2); // 2
-		msg.currencyRate = msgBodyBuf.readUnsignedInt(); // 4
+		msg.currencyRate = msgBodyBuf.readUnsignedIntLE(); // 4
 		return msg;
 	}
 

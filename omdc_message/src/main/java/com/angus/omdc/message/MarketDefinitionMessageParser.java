@@ -21,7 +21,7 @@ public class MarketDefinitionMessageParser extends OmdMessageParser<MarketDefini
 		msg.marketCode = readAsciiString(msgBodyBuf, 4); // string4
 		msg.marketName = readAsciiString(msgBodyBuf, 25); // string25
 		msg.currencyCode = readAsciiString(msgBodyBuf, 3); // string3
-		msg.numberOfSecurities = msgBodyBuf.readUnsignedInt(); // uint32
+		msg.numberOfSecurities = msgBodyBuf.readUnsignedIntLE(); // uint32
 		//
 		return msg;
 	}

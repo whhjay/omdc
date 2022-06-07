@@ -17,7 +17,7 @@ public class SequenceResetMessageParser extends OmdMessageParser<SequenceResetMe
 
 	@Override
 	protected SequenceResetMessage doParseMessageBody(ByteBuf msgBodyBuf, SequenceResetMessage msg) throws Exception {
-		msg.newSeqNo = msgBodyBuf.readUnsignedInt(); // uint32
+		msg.newSeqNo = msgBodyBuf.readUnsignedIntLE(); // uint32
 		//
 		return msg;
 	}
